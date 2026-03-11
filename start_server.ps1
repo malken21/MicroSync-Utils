@@ -10,7 +10,7 @@ $archPattern = Get-TargetArchPattern
 $assetServerExe = if ($archPattern -match "x86_64") { "simple-rust-asset-server-windows-x64.exe" } else { "simple-rust-asset-server-windows-arm64.exe" }
 
 # Update Main App (Server)
-Update-App -scriptDir $scriptDir -repo "malken21/Unity-GLB-Vehicle-Sync" -assetPattern "WindowsServer\.zip$" -outputPath (Join-Path $scriptDir "WindowsServer.zip") -isZip $true
+Update-App -scriptDir $scriptDir -repo "malken21/Unity-GLB-Vehicle-Sync" -assetPattern "Windows\.zip$" -outputPath (Join-Path $scriptDir "WindowsServer.zip") -isZip $true
 
 # Update Asset Server
 $assetPattern = if ($archPattern -match "x86_64") { "windows-x64\.exe$" } else { "windows-arm64\.exe$" }
