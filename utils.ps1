@@ -1,9 +1,4 @@
-﻿function Initialize-Launcher {
-    # Set encoding to UTF-8
-    $OutputEncoding = [System.Text.Encoding]::UTF8
-    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    [Console]::InputEncoding = [System.Text.Encoding]::UTF8
-    
+function Initialize-Launcher {
     # Enable TLS1.2
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Clear-Host
@@ -47,39 +42,13 @@ function Update-App ($scriptDir, $repo, $assetPattern, $outputPath, $isZip = $tr
 
         if ($asset) {
             Write-Host ("Found asset: " + $asset.name)
-            
-            $needsUpdate = $true
-            $versionFilePath = "$outputPath.version"
-            
-            if ($isZip) {
-                if (Test-Path $versionFilePath) {
-                    $localVersion = Get-Content $versionFilePath -Raw
-                    if ($localVersion -eq $asset.updated_at) {
-                        $needsUpdate = $false
-                    }
-                }
-            } else {
-                if (Test-Path $outputPath) {
-                    $localSize = (Get-Item $outputPath).Length
-                    if ($localSize -eq $asset.size) {
-                        $needsUpdate = $false
-                    }
-                }
-            }
-
-            if (-not $needsUpdate) {
-                Write-Host "Already up to date. Skipping download." -ForegroundColor Cyan
-                return
-            }
-
-            Write-Host "Downloading (Size: $($asset.size / 1KB) KB)..."
+            Write-Host "Downloading..."
             Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $outputPath
             
             if ($isZip) {
                 Write-Host "Extracting..."
                 Expand-Archive -Path $outputPath -DestinationPath $scriptDir -Force
                 Remove-Item $outputPath -ErrorAction SilentlyContinue
-                $asset.updated_at | Out-File -FilePath $versionFilePath -Encoding utf8
             }
             
             Write-Host "Update Complete!" -ForegroundColor Green
@@ -89,7 +58,7 @@ function Update-App ($scriptDir, $repo, $assetPattern, $outputPath, $isZip = $tr
     }
 }
 
-function Start-App ($scriptDir, $exeName, $port, $logName, $ip = "127.0.0.1") {
+function Start-App ($scriptDir, $exeName, $port, $logName) {
     $logFile = Join-Path $scriptDir $logName
     
     # Find EXE in subdirectories if not in root
@@ -110,7 +79,6 @@ function Start-App ($scriptDir, $exeName, $port, $logName, $ip = "127.0.0.1") {
     Write-Host ""
     Write-Host "[Start] Starting Application..." -ForegroundColor Green
     Write-Host "EXE: $exePath"
-    Write-Host "IP: $ip"
     Write-Host "Port: $port"
     Write-Host "Log: $logFile"
     Write-Host "----------------------------------------"
@@ -118,7 +86,7 @@ function Start-App ($scriptDir, $exeName, $port, $logName, $ip = "127.0.0.1") {
     # Execute
     $exeDir = Split-Path $exePath
     Push-Location $exeDir
-    & $exePath -ip $ip -port $port -logpath $logFile
+    & $exePath -port $port -logpath $logFile
     Pop-Location
 
     Write-Host ""
@@ -136,4 +104,3 @@ function Start-BackgroundApp ($exePath, $workingDir) {
     
     [System.Diagnostics.Process]::Start($startInfo) | Out-Null
 }
-

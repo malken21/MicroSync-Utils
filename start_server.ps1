@@ -1,4 +1,4 @@
-﻿# Import utils
+# Import utils
 . "$PSScriptRoot\utils.ps1"
 
 Initialize-Launcher
@@ -24,4 +24,3 @@ if (Test-Path $assetServerPath) {
 
 # Start Main App
 Start-App -scriptDir $scriptDir -exeName $mainExe -port 7777 -logName "server_log.txt"
-
