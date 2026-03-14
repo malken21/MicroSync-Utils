@@ -15,7 +15,8 @@ function Get-TargetArchPattern {
     $osArch = $env:PROCESSOR_ARCHITECTURE
     if ($osArch -eq "ARM64") {
         return "aarch64|arm64|arm"
-    } else {
+    }
+    else {
         return "x86_64|x64|amd64"
     }
 }
@@ -53,12 +54,13 @@ function Update-App ($scriptDir, $repo, $assetPattern, $outputPath, $isZip = $tr
             
             Write-Host "Update Complete!" -ForegroundColor Green
         }
-    } catch {
+    }
+    catch {
         Write-Host "[Warning] Failed to check/update. Using existing files." -ForegroundColor Yellow
     }
 }
 
-function Start-App ($scriptDir, $exeName, $port, $logName) {
+function Start-App ($scriptDir, $exeName, $port, $logName, $serverIp) {
     $logFile = Join-Path $scriptDir $logName
     
     # Find EXE in subdirectories if not in root
@@ -86,7 +88,14 @@ function Start-App ($scriptDir, $exeName, $port, $logName) {
     # Execute
     $exeDir = Split-Path $exePath
     Push-Location $exeDir
-    & $exePath -port $port -logpath $logFile
+    
+    $args = "-port $port -logFile `"$logFile`""
+    if ($serverIp) {
+        $args += " -ip $serverIp"
+    }
+    
+    Write-Host "Args: $args"
+    Invoke-Expression "& `"$exePath`" $args"
     Pop-Location
 
     Write-Host ""
