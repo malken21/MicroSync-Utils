@@ -1,4 +1,4 @@
-# Import utils
+﻿# Import utils
 . "$PSScriptRoot\utils.ps1"
 
 Initialize-Launcher
@@ -28,7 +28,8 @@ while ($true) {
     $mbId = $mbId.Trim()
     if ($mbId.Length -eq 5) {
         break
-    } else {
+    }
+    else {
         Write-Host "※IDは5桁で入力してください。" -ForegroundColor Yellow
     }
 }
